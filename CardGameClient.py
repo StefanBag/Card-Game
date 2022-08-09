@@ -1,6 +1,8 @@
 import pygame
 
 # create display window
+from pygame import mixer
+
 import CardGameClient
 from Button import Button
 
@@ -8,6 +10,10 @@ SCREEN_WIDTH = 1200
 SCREEN_HEIGHT = 800
 
 scale = 1
+mixer.init()
+mixer.music.load('Hunter X Hunter - Opening 1 ｜ Departure!.mp3')
+
+mixer.music.play()
 
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption('Button Demo')
@@ -32,7 +38,7 @@ signup_button = Button((SCREEN_WIDTH * 0.5) - (start_img.get_width() / 2),
 login_button = Button((SCREEN_WIDTH * 0.5) - (start_img.get_width() / 2),
                       (SCREEN_HEIGHT * 0.50) - (start_img.get_height() / 2), login_img, scale)
 exit_button = Button((SCREEN_WIDTH * 0.5) - (start_img.get_width() / 2),
-                     (SCREEN_HEIGHT * 0.74) - (start_img.get_height() / 2), exit_img, scale)
+                     (SCREEN_HEIGHT * 0.75) - (start_img.get_height() / 2), exit_img, scale)
 back_button = Button(0,0, back_img, scale)
 
 # game loop
