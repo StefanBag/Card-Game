@@ -37,6 +37,14 @@ back_button = Button(0,0, back_img, scale)
 
 # game loop
 
+def errorMessage(string):
+    font = pygame.font.Font(None, 32)
+    pygame.draw.rect(screen, (255,0,0), pygame.Rect(SCREEN_WIDTH-500, 0, 500, 100))
+    errormsg = font.render(string, False, (255, 255, 255))
+    screen.blit(errormsg, ((SCREEN_WIDTH-errormsg.get_rect().width)-(500-errormsg.get_rect().width)/2, 50))
+
+
+
 
 
 def signup():
@@ -47,15 +55,18 @@ def signup():
     font = pygame.font.Font(None, 32)
     user_text = ''
     pass_text = ''
+    confirmpass_text = ''
 
     # makes the username box rectangle: x, y, wide ,tall
     user_rect = pygame.Rect(150, 200, 140, 32)
     # makes the password box rectangle: x, y, wide ,tall
     pass_rect = pygame.Rect(150, 300, 140, 32)
+    confirmpass_rect = pygame.Rect(150, 400, 140, 32)
     color_active = pygame.Color('azure')
     color_passive = pygame.Color('gray15')
 
     # updates which box is selected and the color that goes with it
+    active_confirmpass = False
     active_user = False
     active_pass = False
 
@@ -75,6 +86,10 @@ def signup():
                     active_pass = True
                 else:
                     active_pass = False
+                if confirmpass_rect.collidepoint(pygame.mouse.get_pos()):
+                    active_confirmpass = True
+                else:
+                    active_confirmpass = False
 
             # checks if any button was pressed
             if event.type == pygame.KEYDOWN:
@@ -92,8 +107,16 @@ def signup():
                     else:
                         # gets the specific key that was pressed and adds it to user_text, gets information
                         pass_text += event.unicode
+                if active_confirmpass:
+                    if event.key == pygame.K_BACKSPACE:
+                        confirmpass_text = confirmpass_text[:-1]
+                    else:
+                        # gets the specific key that was pressed and adds it to user_text, gets information
+                        confirmpass_text += event.unicode
+                        print(confirmpass_text)
 
         screen.fill((0, 0, 0))
+        errorMessage("THIS USERNAME IS ALREADY TAKEN")
         if back_button.draw(screen):
             break
 
@@ -105,31 +128,44 @@ def signup():
             color_pass = color_active
         else:
             color_pass = color_passive
+        if active_confirmpass:
+            color_confirmpass = color_active
+        else:
+            color_confirmpass = color_passive
         # makes user box, border size
         pygame.draw.rect(screen, color_user, user_rect, 2)
         # makes pass box, border size
         pygame.draw.rect(screen, color_pass, pass_rect, 2)
-        displaytext = ""
+        pygame.draw.rect(screen, color_confirmpass, confirmpass_rect, 2)
+        displaytext1 = ""
+        displaytext2 = ""
         for x in pass_text:
-            displaytext += "*"
+            displaytext1 += "*"
+        for x in confirmpass_text:
+            displaytext2 += "*"
 
         # adds titles
         user_title = font.render('USERNAME', False, (255, 255, 255))
         pass_title = font.render('PASSWORD', False, (255, 255, 255))
+        confirmpass_title = font.render('CONFIRM PASSWORD', False, (255, 255, 255))
 
         # adds type able words
         user_surface = font.render(user_text, True, (255, 255, 255))
-        pass_surface = font.render(displaytext, True, (255, 255, 255))
+        pass_surface = font.render(displaytext1, True, (255, 255, 255))
+        confirmpass_surface = font.render(displaytext2, True, (255, 255, 255))
 
         # title position
         screen.blit(user_title, (150, 175))
         screen.blit(pass_title, (150, 275))
+        screen.blit(confirmpass_title, (150, 375))
         # center the words by moving 5 pixels
         screen.blit(user_surface, (user_rect.x + 5, user_rect.y + 5))
         screen.blit(pass_surface, (pass_rect.x + 5, pass_rect.y + 5))
+        screen.blit(confirmpass_surface, (confirmpass_rect.x + 5, confirmpass_rect.y + 5))
         # makes user box start with space and not narrow
         user_rect.w = max(200, user_surface.get_width() + 10)
         pass_rect.w = max(200, pass_surface.get_width() + 10)
+        confirmpass_rect.w = max(200, confirmpass_surface.get_width() + 10)
 
         pygame.display.flip()
         clock.tick(60)
