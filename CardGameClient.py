@@ -1,7 +1,7 @@
 import pygame
 
-
 # create display window
+import CardGameClient
 from Button import Button
 
 SCREEN_WIDTH = 1200
@@ -17,22 +17,30 @@ start_img = pygame.image.load('real sign up.png').convert_alpha()
 login_img = pygame.image.load('real login.png').convert_alpha()
 exit_img = pygame.image.load('Exit.png').convert_alpha()
 background_img = pygame.image.load('elements.jpg').convert_alpha()
+back_img = pygame.image.load('back.png').convert_alpha()
 
-
-start_img = pygame.transform.scale(start_img,(350,100))
-login_img = pygame.transform.scale(login_img,(350,100))
-exit_img = pygame.transform.scale(exit_img,(350,100))
-background_img = pygame.transform.scale(background_img,(1200,800))
+#creates buttons
+start_img = pygame.transform.scale(start_img, (350, 100))
+login_img = pygame.transform.scale(login_img, (350, 100))
+exit_img = pygame.transform.scale(exit_img, (350, 100))
+background_img = pygame.transform.scale(background_img, (1200, 800))
+back_img = pygame.transform.scale(back_img, (50, 50))
 
 # create button instances
-signup_button = Button((SCREEN_WIDTH*0.5)-(start_img.get_width()/2), (SCREEN_HEIGHT*0.25)-(start_img.get_height()/2), start_img, scale)
-login_button = Button((SCREEN_WIDTH*0.5)-(start_img.get_width()/2), (SCREEN_HEIGHT*0.50)-(start_img.get_height()/2), login_img, scale)
-exit_button = Button((SCREEN_WIDTH*0.5)-(start_img.get_width()/2), (SCREEN_HEIGHT*0.74)-(start_img.get_height()/2), exit_img, scale)
+signup_button = Button((SCREEN_WIDTH * 0.5) - (start_img.get_width() / 2),
+                       (SCREEN_HEIGHT * 0.25) - (start_img.get_height() / 2), start_img, scale)
+login_button = Button((SCREEN_WIDTH * 0.5) - (start_img.get_width() / 2),
+                      (SCREEN_HEIGHT * 0.50) - (start_img.get_height() / 2), login_img, scale)
+exit_button = Button((SCREEN_WIDTH * 0.5) - (start_img.get_width() / 2),
+                     (SCREEN_HEIGHT * 0.74) - (start_img.get_height() / 2), exit_img, scale)
+back_button = Button(0,0, back_img, scale)
 
 # game loop
-run = True
+
+
 
 def signup():
+    print("true")
     pygame.init()
     clock = pygame.time.Clock()
     screen = pygame.display.set_mode([1200, 800])
@@ -46,19 +54,16 @@ def signup():
     pass_rect = pygame.Rect(150, 300, 140, 32)
     color_active = pygame.Color('azure')
     color_passive = pygame.Color('gray15')
-    color_user = color_passive
-    color_pass = color_passive
 
     # updates which box is selected and the color that goes with it
     active_user = False
     active_pass = False
-    run = True
 
-    while run:
+    while True:
         for event in pygame.event.get():
             # if game was closed
             if event.type == pygame.QUIT:
-                run = False
+                return 1
                 # checks that if you have clicked on the box or outside of it
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if user_rect.collidepoint(pygame.mouse.get_pos()):
@@ -89,6 +94,8 @@ def signup():
                         pass_text += event.unicode
 
         screen.fill((0, 0, 0))
+        if back_button.draw(screen):
+            break
 
         if active_user:
             color_user = color_active
@@ -102,9 +109,21 @@ def signup():
         pygame.draw.rect(screen, color_user, user_rect, 2)
         # makes pass box, border size
         pygame.draw.rect(screen, color_pass, pass_rect, 2)
+        displaytext = ""
+        for x in pass_text:
+            displaytext += "*"
 
+        # adds titles
+        user_title = font.render('USERNAME', False, (255, 255, 255))
+        pass_title = font.render('PASSWORD', False, (255, 255, 255))
+
+        # adds type able words
         user_surface = font.render(user_text, True, (255, 255, 255))
-        pass_surface = font.render(pass_text, True, (255, 255, 255))
+        pass_surface = font.render(displaytext, True, (255, 255, 255))
+
+        # title position
+        screen.blit(user_title, (150, 175))
+        screen.blit(pass_title, (150, 275))
         # center the words by moving 5 pixels
         screen.blit(user_surface, (user_rect.x + 5, user_rect.y + 5))
         screen.blit(pass_surface, (pass_rect.x + 5, pass_rect.y + 5))
@@ -115,27 +134,26 @@ def signup():
         pygame.display.flip()
         clock.tick(60)
 
-while run:
 
-    screen.fill((0,0,0))
+while True:
+    screen.fill((0, 0, 0))
     screen.blit(background_img, (0, 0))
+
     if signup_button.draw(screen):
-        signup()
+        if signup() == 1:
+            pygame.quit()
     if login_button.draw(screen):
         print('LOGIN')
+
     if exit_button.draw(screen):
-        break
-
-
-
+        pygame.quit()
 
     # event handler
     for event in pygame.event.get():
         # quit game
         if event.type == pygame.QUIT:
-            run = False
+            pygame.quit()
 
     pygame.display.update()
-
 
 pygame.quit()
