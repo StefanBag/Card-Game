@@ -1,5 +1,6 @@
 import pygame
 
+
 # create display window
 from Button import Button
 
@@ -30,16 +31,100 @@ exit_button = Button((SCREEN_WIDTH*0.5)-(start_img.get_width()/2), (SCREEN_HEIGH
 
 # game loop
 run = True
+
+def signup():
+    pygame.init()
+    clock = pygame.time.Clock()
+    screen = pygame.display.set_mode([1200, 800])
+    font = pygame.font.Font(None, 32)
+    user_text = ''
+    pass_text = ''
+
+    # makes the username box rectangle: x, y, wide ,tall
+    user_rect = pygame.Rect(150, 200, 140, 32)
+    # makes the password box rectangle: x, y, wide ,tall
+    pass_rect = pygame.Rect(150, 300, 140, 32)
+    color_active = pygame.Color('azure')
+    color_passive = pygame.Color('gray15')
+    color_user = color_passive
+    color_pass = color_passive
+
+    # updates which box is selected and the color that goes with it
+    active_user = False
+    active_pass = False
+    run = True
+
+    while run:
+        for event in pygame.event.get():
+            # if game was closed
+            if event.type == pygame.QUIT:
+                run = False
+                # checks that if you have clicked on the box or outside of it
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if user_rect.collidepoint(pygame.mouse.get_pos()):
+                    active_user = True
+                else:
+                    active_user = False
+                if pass_rect.collidepoint(pygame.mouse.get_pos()):
+
+                    active_pass = True
+                else:
+                    active_pass = False
+
+            # checks if any button was pressed
+            if event.type == pygame.KEYDOWN:
+                # short form for if active == true
+                if active_user:
+                    # ablitiy to backspace/delete, looks if backspace is pressed
+                    if event.key == pygame.K_BACKSPACE:
+                        user_text = user_text[:-1]
+                    else:
+                        # gets the specific key that was pressed and adds it to user_text, gets information
+                        user_text += event.unicode
+                if active_pass:
+                    if event.key == pygame.K_BACKSPACE:
+                        pass_text = pass_text[:-1]
+                    else:
+                        # gets the specific key that was pressed and adds it to user_text, gets information
+                        pass_text += event.unicode
+
+        screen.fill((0, 0, 0))
+
+        if active_user:
+            color_user = color_active
+        else:
+            color_user = color_passive
+        if active_pass:
+            color_pass = color_active
+        else:
+            color_pass = color_passive
+        # makes user box, border size
+        pygame.draw.rect(screen, color_user, user_rect, 2)
+        # makes pass box, border size
+        pygame.draw.rect(screen, color_pass, pass_rect, 2)
+
+        user_surface = font.render(user_text, True, (255, 255, 255))
+        pass_surface = font.render(pass_text, True, (255, 255, 255))
+        # center the words by moving 5 pixels
+        screen.blit(user_surface, (user_rect.x + 5, user_rect.y + 5))
+        screen.blit(pass_surface, (pass_rect.x + 5, pass_rect.y + 5))
+        # makes user box start with space and not narrow
+        user_rect.w = max(200, user_surface.get_width() + 10)
+        pass_rect.w = max(200, pass_surface.get_width() + 10)
+
+        pygame.display.flip()
+        clock.tick(60)
+
 while run:
 
     screen.fill((0,0,0))
     screen.blit(background_img, (0, 0))
     if signup_button.draw(screen):
-        print('START')
+        signup()
     if login_button.draw(screen):
         print('LOGIN')
     if exit_button.draw(screen):
-        pygame.quit()
+        break
 
 
 
@@ -51,5 +136,6 @@ while run:
             run = False
 
     pygame.display.update()
+
 
 pygame.quit()
