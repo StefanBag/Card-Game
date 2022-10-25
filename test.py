@@ -1,3 +1,5 @@
-s = "hello xd"
+import pickle
 
-print(s[:-1])
+login_credentials = {}
+with open('loginData.pkl', "wb") as f:
+    pickle.dump(login_credentials, f)

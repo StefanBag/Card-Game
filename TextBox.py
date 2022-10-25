@@ -14,9 +14,15 @@ class TextBox():
         self.title = title
         self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
 
-    def addText(self,addText):
+    def remove(self):
+        self._textboxes.remove(self)
+
+
+    def addText(self,addText,limit):
         if addText == "delete":
             self.text = self.text[:-1]
+        elif addText == " " or addText == "~" or addText == "\t" or len(self.text)==limit:
+            pass
         else:
             self.text += addText
 
