@@ -14,7 +14,8 @@ errormsgtimer = datetime.datetime.now() + datetime.timedelta(seconds=3)
 SCREEN_WIDTH = 1200
 SCREEN_HEIGHT = 800
 CHARLIMIT = 15
-response = ""
+response = " "
+
 
 SCALE = 1
 mixer.init()
@@ -85,6 +86,7 @@ def eventListener():
     for event in pygame.event.get():
         # if game was closed
         if event.type == pygame.QUIT:
+            conn.send("~EXIT~")
             pygame.quit()
             # checks that if you have clicked on the box or outside of it
         if event.type == pygame.MOUSEBUTTONDOWN:
@@ -120,7 +122,7 @@ def signup():
 
         if back_button.draw(screen):
             removeAllTextBoxes()
-            return 0
+            menuScreen()
 
         user_textbox.makeTextBox(False, screen)
         pass_textbox.makeTextBox(True, screen)
@@ -128,18 +130,17 @@ def signup():
         if continue_button.draw(screen):
             if confirmpass_textbox.text != pass_textbox.text:
                 errorMessage("PASSWORDS DO NOT MATCH")
-                pygame.display.flip()
-                time.sleep(1.5)
+                response = ""
             else:
                 response = conn.send("~SIGNUP~ " + user_textbox.text + " " + pass_textbox.text)
             if response == "SUCCESSFUL SIGNUP":
                 removeAllTextBoxes()
-                return 0
+                menuScreen()
             else:
                 errorMessage(response)
 
         pygame.display.flip()
-        clock.tick(60)
+
 
 
 def login():
@@ -153,7 +154,7 @@ def login():
 
         if back_button.draw(screen):
             removeAllTextBoxes()
-            return 0
+            menuScreen()
 
         user_textbox.makeTextBox(False, screen)
         pass_textbox.makeTextBox(True, screen)
@@ -162,8 +163,9 @@ def login():
             print(user_textbox.text)
             response = conn.send("~LOGIN~ " + user_textbox.text + " " + pass_textbox.text)
             if response == "LOGIN SUCCESSFUL":
+                conn.user = user_textbox.text
                 removeAllTextBoxes()
-                return 3
+                playScreen()
             else:
                 errorMessage(response)
 
@@ -177,7 +179,7 @@ def playScreen():
         screen.fill((0, 50, 100))
         eventListener()
         if play_button.draw(screen):
-            print()
+            response = conn.send("~TICTACTOE~ " + conn.user)
 
         pygame.display.flip()
 
@@ -194,13 +196,13 @@ def menuScreen():
         screen.blit(background_img, (0, 0))
 
         if signup_button.draw(screen):
-            return 1
+            signup()
             # sys.stdout.close()
         if login_button.draw(screen):
-            return 2
+            login()
 
         if exit_button.draw(screen):
-            return -1
+            sys.exit(0)
             # sys.stdout.close()
         if muteMusic.draw(screen):
             if mixer.music.get_volume() == 0:
@@ -212,7 +214,10 @@ def menuScreen():
         for event in pygame.event.get():
             # quit game
             if event.type == pygame.QUIT:
-                sys.stdout.close()
-                pygame.quit()
+                conn.send("~EXIT~")
+                sys.exit(0)
+
 
         pygame.display.update()
+
+
