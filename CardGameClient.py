@@ -16,7 +16,6 @@ SCREEN_HEIGHT = 800
 CHARLIMIT = 15
 response = " "
 
-
 SCALE = 1
 mixer.init()
 mixer.music.load('Hunter X Hunter - Opening 1 ｜ Departure!.mp3')
@@ -47,7 +46,7 @@ background_img = pygame.transform.scale(background_img, (1200, 800))
 back_img = pygame.transform.scale(back_img, (50, 50))
 continue_img = pygame.transform.scale(continue_img, (200, 200))
 muteMusic_img = pygame.transform.scale(muteMusic_img, (100, 100))
-play_img = pygame.transform.scale(play_img,(300,100))
+play_img = pygame.transform.scale(play_img, (300, 100))
 # create button instances
 signup_button = Button((SCREEN_WIDTH * 0.5) - (start_img.get_width() / 2),
                        (SCREEN_HEIGHT * 0.25) - (start_img.get_height() / 2), start_img, SCALE)
@@ -81,13 +80,13 @@ def errorMessage(string):
     time.sleep(2)
 
 
-
 def eventListener():
     for event in pygame.event.get():
         # if game was closed
         if event.type == pygame.QUIT:
             conn.send("~EXIT~")
-            pygame.quit()
+
+            sys.exit(1)
             # checks that if you have clicked on the box or outside of it
         if event.type == pygame.MOUSEBUTTONDOWN:
             for user in TextBox._textboxes:
@@ -115,7 +114,6 @@ def signup():
     pass_textbox = TextBox(200, 32, int(SCREEN_WIDTH / 8), int(SCREEN_HEIGHT * 0.4), "PASSWORD")
     confirmpass_textbox = TextBox(200, 32, int(SCREEN_WIDTH / 8), int(SCREEN_HEIGHT * 0.5), "CONFIRM PASSWORD")
 
-
     while True:
         screen.fill((0, 0, 0))
         eventListener()
@@ -142,11 +140,9 @@ def signup():
         pygame.display.flip()
 
 
-
 def login():
     user_textbox = TextBox(200, 32, int(SCREEN_WIDTH / 8), int(SCREEN_HEIGHT * 0.3), "USERNAME")
     pass_textbox = TextBox(200, 32, int(SCREEN_WIDTH / 8), int(SCREEN_HEIGHT * 0.4), "PASSWORD")
-
 
     while True:
         screen.fill((0, 0, 0))
@@ -174,17 +170,19 @@ def login():
 
 
 def playScreen():
-
+    pass_textbox = TextBox(200, 32, int(SCREEN_WIDTH / 8), int(SCREEN_HEIGHT * 0.4), "PASSWORD")
     while True:
         screen.fill((0, 50, 100))
         eventListener()
+        if back_button.draw(screen):
+            removeAllTextBoxes()
+            menuScreen()
+
+        pass_textbox.makeTextBox(False, screen)
         if play_button.draw(screen):
             response = conn.send("~TICTACTOE~ " + conn.user)
 
         pygame.display.flip()
-
-
-
 
 
 #                                                   MAIN SCREEN
@@ -194,7 +192,7 @@ def menuScreen():
     while True:
         screen.fill((0, 0, 0))
         screen.blit(background_img, (0, 0))
-
+        eventListener()
         if signup_button.draw(screen):
             signup()
             # sys.stdout.close()
@@ -202,7 +200,8 @@ def menuScreen():
             login()
 
         if exit_button.draw(screen):
-            sys.exit(0)
+            conn.send("~EXIT~")
+            sys.exit(1)
             # sys.stdout.close()
         if muteMusic.draw(screen):
             if mixer.music.get_volume() == 0:
@@ -210,14 +209,5 @@ def menuScreen():
             else:
                 mixer.music.set_volume(0)
 
-        # event handler
-        for event in pygame.event.get():
-            # quit game
-            if event.type == pygame.QUIT:
-                conn.send("~EXIT~")
-                sys.exit(0)
-
 
         pygame.display.update()
-
-

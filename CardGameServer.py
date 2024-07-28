@@ -8,7 +8,7 @@ PORT = 5051
 SERVER = "v2.wewoo.it"
 ADDR = (SERVER, PORT)
 FORMAT = 'utf-8'
-DISCONNECT_MESSAGE = "!DISCONNECT"
+
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server.bind(ADDR)
 
@@ -27,8 +27,6 @@ def handle_client(conn, addr):
         if msg_length:
             msg_length = int(msg_length)
             msg = conn.recv(msg_length).decode(FORMAT)
-            if msg == DISCONNECT_MESSAGE:
-                connected = False
             msg = msg.split(" ")
             if msg[0] == "~SIGNUP~":
                 if msg[1] not in login_credentials:
@@ -52,17 +50,13 @@ def handle_client(conn, addr):
                 else:
                     conn.send("IN QUEUE".encode(FORMAT))
             elif msg[0] == "~EXIT~":
+                print(":)")
+                conn.send("EXIT1".encode(FORMAT))
                 break
             else:
                 conn.send("NONE".encode(FORMAT))
 
 
-
-
-
-
-
-    conn.close()
 
 
 def start():
