@@ -12,15 +12,14 @@ FORMAT = 'utf-8'
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server.bind(ADDR)
 
-queue = []
-
 with open('loginData.pkl', "rb") as f2:
     login_credentials = pickle.load(f2)
+    users = dict.fromkeys(login_credentials, "Offline")
 
 
 def handle_client(conn, addr):
     print(f"[NEW CONNECTION] {addr} connected.")
-
+    curruser = "$none$"
     connected = True
     while connected:
         msg_length = conn.recv(HEADER).decode(FORMAT)
@@ -40,17 +39,16 @@ def handle_client(conn, addr):
             elif msg[0] == "~LOGIN~":
                 if msg[1] in login_credentials:
                     if msg[2] == login_credentials[msg[1]]:
+                        curruser = msg[1]
+                        users[curruser] = "Online"
                         conn.send("LOGIN SUCCESSFUL".encode(FORMAT))
-
                 else:
                     conn.send("INVALID LOGIN".encode(FORMAT))
             elif msg[0] == "~TICTACTOE~":
-                if len(queue) % 2 == 0:
-                    conn.send("MATCH FOUND".encode(FORMAT))
-                else:
-                    conn.send("IN QUEUE".encode(FORMAT))
+                print("XD")
             elif msg[0] == "~EXIT~":
-                print(":)")
+                if curruser != "$none$":
+                    users[curruser] = "Offline"
                 conn.send("EXIT1".encode(FORMAT))
                 break
             else:
@@ -66,7 +64,7 @@ def start():
         conn, addr = server.accept()
         thread = threading.Thread(target=handle_client, args=(conn, addr))
         thread.start()
-
+        print(users)
         print(f"[ACTIVE CONNECTIONS] {threading.activeCount() - 1}")
 
 

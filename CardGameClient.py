@@ -37,17 +37,22 @@ back_img = pygame.image.load('pics/back.png').convert_alpha()
 continue_img = pygame.image.load('pics/continue.png').convert_alpha()
 muteMusic_img = pygame.image.load('pics/muteMusic.png').convert_alpha()
 play_img = pygame.image.load('pics/Play.png').convert_alpha()
+search_img = pygame.image.load('pics/search.png').convert_alpha()
 # creates buttons images
-start_img = pygame.transform.scale(start_img, (350, 100))
-login_img = pygame.transform.scale(login_img, (350, 100))
-login2_img = pygame.transform.scale(login2_img, (200, 200))
-exit_img = pygame.transform.scale(exit_img, (350, 100))
-background_img = pygame.transform.scale(background_img, (1200, 800))
-back_img = pygame.transform.scale(back_img, (50, 50))
-continue_img = pygame.transform.scale(continue_img, (200, 200))
-muteMusic_img = pygame.transform.scale(muteMusic_img, (100, 100))
-play_img = pygame.transform.scale(play_img, (300, 100))
+search_img = pygame.transform.scale(search_img, (SCREEN_WIDTH/24, SCREEN_HEIGHT/25))
+start_img = pygame.transform.scale(start_img, (SCREEN_WIDTH/4, SCREEN_HEIGHT/8))
+login_img = pygame.transform.scale(login_img, (SCREEN_WIDTH/4, SCREEN_HEIGHT/8))
+login2_img = pygame.transform.scale(login2_img, (SCREEN_WIDTH/6, SCREEN_HEIGHT/4))
+exit_img = pygame.transform.scale(exit_img, (SCREEN_WIDTH/4, SCREEN_HEIGHT/8))
+background_img = pygame.transform.scale(background_img, (SCREEN_WIDTH, SCREEN_HEIGHT))
+back_img = pygame.transform.scale(back_img, (SCREEN_WIDTH/24, SCREEN_HEIGHT/16))
+continue_img = pygame.transform.scale(continue_img, (SCREEN_WIDTH/6, SCREEN_HEIGHT/4))
+muteMusic_img = pygame.transform.scale(muteMusic_img, (SCREEN_WIDTH/12, SCREEN_HEIGHT/8))
+play_img = pygame.transform.scale(play_img, (SCREEN_WIDTH/4, SCREEN_HEIGHT/8))
 # create button instances
+
+search_button = Button(SCREEN_WIDTH*0.4 + SCREEN_WIDTH/6 ,
+                           (SCREEN_HEIGHT*0.15), search_img, SCALE)
 signup_button = Button((SCREEN_WIDTH * 0.5) - (start_img.get_width() / 2),
                        (SCREEN_HEIGHT * 0.25) - (start_img.get_height() / 2), start_img, SCALE)
 login_button = Button((SCREEN_WIDTH * 0.5) - (login_img.get_width() / 2),
@@ -110,9 +115,9 @@ def eventListener():
 
 
 def signup():
-    user_textbox = TextBox(200, 32, int(SCREEN_WIDTH / 8), int(SCREEN_HEIGHT * 0.3), "USERNAME")
-    pass_textbox = TextBox(200, 32, int(SCREEN_WIDTH / 8), int(SCREEN_HEIGHT * 0.4), "PASSWORD")
-    confirmpass_textbox = TextBox(200, 32, int(SCREEN_WIDTH / 8), int(SCREEN_HEIGHT * 0.5), "CONFIRM PASSWORD")
+    user_textbox = TextBox(SCREEN_WIDTH/6, SCREEN_HEIGHT/25, int(SCREEN_WIDTH / 8), int(SCREEN_HEIGHT * 0.3), "USERNAME")
+    pass_textbox = TextBox(SCREEN_WIDTH/6, SCREEN_HEIGHT/25, int(SCREEN_WIDTH / 8), int(SCREEN_HEIGHT * 0.4), "PASSWORD")
+    confirmpass_textbox = TextBox(SCREEN_WIDTH/6, SCREEN_HEIGHT/25, int(SCREEN_WIDTH / 8), int(SCREEN_HEIGHT * 0.5), "CONFIRM PASSWORD")
 
     while True:
         screen.fill((0, 0, 0))
@@ -141,8 +146,8 @@ def signup():
 
 
 def login():
-    user_textbox = TextBox(200, 32, int(SCREEN_WIDTH / 8), int(SCREEN_HEIGHT * 0.3), "USERNAME")
-    pass_textbox = TextBox(200, 32, int(SCREEN_WIDTH / 8), int(SCREEN_HEIGHT * 0.4), "PASSWORD")
+    user_textbox = TextBox(SCREEN_WIDTH/6, SCREEN_HEIGHT/25, int(SCREEN_WIDTH / 8), int(SCREEN_HEIGHT * 0.3), "USERNAME")
+    pass_textbox = TextBox(SCREEN_WIDTH/6, SCREEN_HEIGHT/25, int(SCREEN_WIDTH / 8), int(SCREEN_HEIGHT * 0.4), "PASSWORD")
 
     while True:
         screen.fill((0, 0, 0))
@@ -170,7 +175,9 @@ def login():
 
 
 def playScreen():
-    pass_textbox = TextBox(200, 32, int(SCREEN_WIDTH / 8), int(SCREEN_HEIGHT * 0.4), "PASSWORD")
+    search_textbox = TextBox(SCREEN_WIDTH/6, SCREEN_HEIGHT/25, int(SCREEN_WIDTH * 0.4), int(SCREEN_HEIGHT * 0.15), "")
+
+
     while True:
         screen.fill((0, 50, 100))
         eventListener()
@@ -178,9 +185,9 @@ def playScreen():
             removeAllTextBoxes()
             menuScreen()
 
-        pass_textbox.makeTextBox(False, screen)
-        if play_button.draw(screen):
-            response = conn.send("~TICTACTOE~ " + conn.user)
+        search_textbox.makeTextBox(False, screen)
+        if search_button.draw(screen):
+            response = conn.send("~SEARCH~ " + search_textbox.text)
 
         pygame.display.flip()
 
@@ -208,6 +215,5 @@ def menuScreen():
                 mixer.music.set_volume(0.1)
             else:
                 mixer.music.set_volume(0)
-
 
         pygame.display.update()
