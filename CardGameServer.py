@@ -44,8 +44,11 @@ def handle_client(conn, addr):
                         conn.send("LOGIN SUCCESSFUL".encode(FORMAT))
                 else:
                     conn.send("INVALID LOGIN".encode(FORMAT))
-            elif msg[0] == "~TICTACTOE~":
-                print("XD")
+            elif msg[0] == "~SEARCH~":
+                if msg[1] in users:
+                    conn.send(users[msg[1]].encode(FORMAT))
+                else:
+                    conn.send("INVALID".encode(FORMAT))
             elif msg[0] == "~EXIT~":
                 if curruser != "$none$":
                     users[curruser] = "Offline"
