@@ -6,6 +6,9 @@ import pygame
 import sys
 # create display window
 from pygame import mixer
+
+import Player
+import Screen
 from Button import Button
 from Connect import Connect
 from TextBox import TextBox
@@ -37,7 +40,7 @@ back_img = pygame.image.load('pics/back.png').convert_alpha()
 continue_img = pygame.image.load('pics/continue.png').convert_alpha()
 muteMusic_img = pygame.image.load('pics/muteMusic.png').convert_alpha()
 play_img = pygame.image.load('pics/Play.png').convert_alpha()
-search_img = pygame.image.load('pics/search.png').convert_alpha()
+search_img = pygame.image.load('pics/Play.png').convert_alpha()
 # creates buttons images
 search_img = pygame.transform.scale(search_img, (SCREEN_WIDTH/24, SCREEN_HEIGHT/25))
 start_img = pygame.transform.scale(start_img, (SCREEN_WIDTH/4, SCREEN_HEIGHT/8))
@@ -51,7 +54,7 @@ muteMusic_img = pygame.transform.scale(muteMusic_img, (SCREEN_WIDTH/12, SCREEN_H
 play_img = pygame.transform.scale(play_img, (SCREEN_WIDTH/4, SCREEN_HEIGHT/8))
 # create button instances
 
-search_button = Button(SCREEN_WIDTH*0.4 + SCREEN_WIDTH/6 ,
+search_button = Button(SCREEN_WIDTH*0.4 + SCREEN_WIDTH/6,
                            (SCREEN_HEIGHT*0.15), search_img, SCALE)
 signup_button = Button((SCREEN_WIDTH * 0.5) - (start_img.get_width() / 2),
                        (SCREEN_HEIGHT * 0.25) - (start_img.get_height() / 2), start_img, SCALE)
@@ -71,48 +74,6 @@ conn = Connect()
 conn.connect()
 
 
-def removeAllTextBoxes():
-    for user in TextBox._textboxes:
-        user.remove()
-
-
-def errorMessage(string):
-    font = pygame.font.Font(None, 32)
-    pygame.draw.rect(screen, (255, 0, 0), pygame.Rect(SCREEN_WIDTH - 500, 0, 500, 100))
-    errormsg = font.render(string, False, (255, 255, 255))
-    screen.blit(errormsg, ((SCREEN_WIDTH - errormsg.get_rect().width) - (500 - errormsg.get_rect().width) / 2, 50))
-    pygame.display.flip()
-    time.sleep(2)
-
-
-def eventListener():
-    for event in pygame.event.get():
-        # if game was closed
-        if event.type == pygame.QUIT:
-            conn.send("~EXIT~")
-
-            sys.exit(1)
-            # checks that if you have clicked on the box or outside of it
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            for user in TextBox._textboxes:
-                if user.rect.collidepoint(pygame.mouse.get_pos()):
-                    user.active = True
-                else:
-                    user.active = False
-
-        # checks if any button was pressed
-        if event.type == pygame.KEYDOWN:
-            for user in TextBox._textboxes:
-                # short form for if active == true
-                if user.active:
-                    # ablitiy to backspace/delete, looks if backspace is pressed
-                    if event.key == pygame.K_BACKSPACE:
-                        print(user.text)
-                        user.addText("delete", CHARLIMIT)
-                    else:
-                        # gets the specific key that was pressed and adds it to user_text, gets information
-                        user.addText(event.unicode, CHARLIMIT)
-
 
 def signup():
     user_textbox = TextBox(SCREEN_WIDTH/6, SCREEN_HEIGHT/25, int(SCREEN_WIDTH / 8), int(SCREEN_HEIGHT * 0.3), "USERNAME")
@@ -121,10 +82,10 @@ def signup():
 
     while True:
         screen.fill((0, 0, 0))
-        eventListener()
+        Screen.eventListener(conn)
 
         if back_button.draw(screen):
-            removeAllTextBoxes()
+            Screen.removeAllTextBoxes()
             menuScreen()
 
         user_textbox.makeTextBox(False, screen)
@@ -132,15 +93,15 @@ def signup():
         confirmpass_textbox.makeTextBox(True, screen)
         if continue_button.draw(screen):
             if confirmpass_textbox.text != pass_textbox.text:
-                errorMessage("PASSWORDS DO NOT MATCH")
+                Screen.errorMessage("PASSWORDS DO NOT MATCH")
                 response = ""
             else:
                 response = conn.send("~SIGNUP~ " + user_textbox.text + " " + pass_textbox.text)
             if response == "SUCCESSFUL SIGNUP":
-                removeAllTextBoxes()
+                Screen.removeAllTextBoxes()
                 menuScreen()
             else:
-                errorMessage(response)
+                Screen.errorMessage(response, screen)
 
         pygame.display.flip()
 
@@ -151,27 +112,29 @@ def login():
 
     while True:
         screen.fill((0, 0, 0))
-        eventListener()
+        Screen.eventListener(conn)
 
         if back_button.draw(screen):
-            removeAllTextBoxes()
+            Screen.removeAllTextBoxes()
             menuScreen()
 
         user_textbox.makeTextBox(False, screen)
         pass_textbox.makeTextBox(True, screen)
 
         if login2_button.draw(screen):
-            print(user_textbox.text)
             response = conn.send("~LOGIN~ " + user_textbox.text + " " + pass_textbox.text)
             if response == "LOGIN SUCCESSFUL":
                 conn.user = user_textbox.text
-                removeAllTextBoxes()
+
+                Screen.removeAllTextBoxes()
                 playScreen()
             else:
-                errorMessage(response)
+                Screen.errorMessage(response, screen)
 
         pygame.display.flip()
         clock.tick(60)
+
+
 
 
 def playScreen():
@@ -180,9 +143,9 @@ def playScreen():
 
     while True:
         screen.fill((0, 50, 100))
-        eventListener()
+        Screen.eventListener(conn)
         if back_button.draw(screen):
-            removeAllTextBoxes()
+            Screen.removeAllTextBoxes()
             menuScreen()
 
         search_textbox.makeTextBox(False, screen)
@@ -199,7 +162,7 @@ def menuScreen():
     while True:
         screen.fill((0, 0, 0))
         screen.blit(background_img, (0, 0))
-        eventListener()
+        Screen.eventListener(conn)
         if signup_button.draw(screen):
             signup()
             # sys.stdout.close()

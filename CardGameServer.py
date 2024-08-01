@@ -5,7 +5,7 @@ import threading
 
 HEADER = 64
 PORT = 5051
-SERVER = "v2.wewoo.it"
+SERVER = "148.113.183.233"
 ADDR = (SERVER, PORT)
 FORMAT = 'utf-8'
 
@@ -15,6 +15,7 @@ server.bind(ADDR)
 with open('loginData.pkl', "rb") as f2:
     login_credentials = pickle.load(f2)
     users = dict.fromkeys(login_credentials, "Offline")
+
 
 
 def handle_client(conn, addr):
@@ -67,7 +68,6 @@ def start():
         conn, addr = server.accept()
         thread = threading.Thread(target=handle_client, args=(conn, addr))
         thread.start()
-        print(users)
         print(f"[ACTIVE CONNECTIONS] {threading.activeCount() - 1}")
 
 
